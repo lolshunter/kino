@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Кинотеатр</title>
+    <title>СюшаКинема</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -23,20 +23,38 @@
             height: 100vh;
             background-color: #070709;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             overflow: hidden;
+            padding: 20px 0;
         }
 
         .wrapper {
             width: 100%;
             max-width: 900px;
-            max-height: 100vh;
             padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            margin: auto 0;
+        }
+
+        /* --- НАЗВАНИЕ ФИЛЬМА --- */
+        .movie-title {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: 5px;
+            text-align: center;
+            margin-bottom: 28px;
+            opacity: 0.9;
+        }
+
+        /* --- КОНТЕЙНЕР ПЛЕЕРА И КОТИКА --- */
+        .kinobox-container {
+            position: relative;
+            width: 100%;
         }
 
         .kinobox {
@@ -58,14 +76,14 @@
             display: block;
         }
 
-        /* --- СТИЛИ КНОПОК --- */
+        /* --- КНОПКИ ПЛЕЕРА --- */
         .kinobox_nav, [class*="kinobox"] ul, [class*="kinobox"] div[class*="nav"] {
             background-color: #12131c !important;
             padding: 10px 12px !important;
             gap: 6px !important;
             display: flex !important;
             flex-wrap: wrap !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
@@ -90,40 +108,38 @@
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
         }
 
-        /* --- КОТИК СВЕРХУ СЛЕВА --- */
+        /* --- КОТИК СПРАВА НА РАМКЕ --- */
         .cat-container {
-            position: relative;
-            align-self: flex-start;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
+            position: absolute;
+            top: -42px;
+            right: 18px;
+            z-index: 10;
         }
 
         .cat-img {
-            width: 110px;
-            height: 110px;
+            width: 85px;
+            height: 85px;
             cursor: pointer;
             object-fit: contain;
             
-            /* Блокировка выделения и меню скачивания */
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             -webkit-user-drag: none;
             
-            transition: transform 0.12s ease-out;
+            transition: transform 0.06s ease-out;
+            will-change: transform;
         }
 
-        /* Мягкое сплющивание при нажатии */
-        .cat-img:active, .cat-img.squish {
-            transform: scale(1.1, 0.9) translateY(4px);
+        /* Быстрое сплющивание */
+        .cat-img.squish {
+            transform: scale(1.12, 0.88) translateY(3px);
         }
 
-        /* Анимация летящих сердечек */
+        /* Летящие сердечки */
         .floating-heart {
             position: absolute;
-            font-size: 22px;
+            font-size: 20px;
             pointer-events: none;
             animation: floatUp 1.2s ease-out forwards;
             z-index: 99;
@@ -139,23 +155,46 @@
                 transform: translate(var(--dx), var(--dy)) scale(1.4);
             }
         }
+
+        /* --- СЕРДЕЧКО ВНИЗУ --- */
+        .footer-heart {
+            color: #ffb6c1;
+            font-size: 18px;
+            opacity: 0.6;
+            user-select: none;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-        <!-- Котик расположен СВЕРХУ СЛЕВА над плеером -->
-        <div class="cat-container">
-            <img src="cat.png" alt="Cat" class="cat-img" id="cat" draggable="false">
-        </div>
+        <!-- Название фильма -->
+        <h1 class="movie-title" id="movie-title"></h1>
 
-        <div class="kinobox"></div>
+        <div class="kinobox-container">
+            <!-- Котик «сидит» на верхней рамке плеере -->
+            <div class="cat-container">
+                <img src="cat.png" alt="Cat" class="cat-img" id="cat" draggable="false">
+            </div>
+
+            <div class="kinobox"></div>
+        </div>
     </div>
+
+    <!-- Сердечко в самом низу страницы -->
+    <div class="footer-heart">♡</div>
 
     <script src="https://fbphdplay.top/kinobox.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const filmId = urlParams.get('id');
+        const filmTitle = urlParams.get('title');
+
+        // Подставляем название, если оно передано в ссылке
+        if (filmTitle) {
+            document.getElementById('movie-title').innerText = decodeURIComponent(filmTitle);
+        }
 
         if (filmId) {
             kinobox('.kinobox', {
@@ -171,16 +210,14 @@
         const cat = document.getElementById('cat');
         let clickCount = 0;
 
-        // Блокируем вызов контекстного меню долгим нажатием
         cat.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        cat.addEventListener('click', () => {
+        cat.addEventListener('pointerdown', () => {
             clickCount++;
 
             cat.classList.add('squish');
-            setTimeout(() => cat.classList.remove('squish'), 120);
+            setTimeout(() => cat.classList.remove('squish'), 60);
 
-            // На 5-й клик вылетают сердечки
             if (clickCount >= 5) {
                 spawnHearts();
                 clickCount = 0;
@@ -197,14 +234,14 @@
                 heart.innerText = '💖';
 
                 const angle = (Math.PI * 2 / heartCount) * i;
-                const dist = 70 + Math.random() * 40;
+                const dist = 60 + Math.random() * 35;
                 const dx = Math.cos(angle) * dist + 'px';
                 const dy = (Math.sin(angle) * dist - 30) + 'px';
 
                 heart.style.setProperty('--dx', dx);
                 heart.style.setProperty('--dy', dy);
-                heart.style.left = '45px';
-                heart.style.top = '35px';
+                heart.style.left = '35px';
+                heart.style.top = '25px';
 
                 container.appendChild(heart);
 
