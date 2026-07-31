@@ -104,15 +104,16 @@
             height: 75px;
             cursor: pointer;
             user-select: none;
+            object-fit: contain;
             transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Анимация сплющивания при клике */
+        /* Эффект сплющивания при нажатии */
         .cat-img:active, .cat-img.squish {
             transform: scale(1.25, 0.7) translateY(6px);
         }
 
-        /* Анимация летящих сердечек для пасхалки */
+        /* Анимация летящих сердечек */
         .floating-heart {
             position: absolute;
             font-size: 20px;
@@ -138,9 +139,9 @@
     <div class="wrapper">
         <div class="kinobox"></div>
 
-        <!-- Интерактивный котик под плеером -->
+        <!-- Интерактивный котик из файла cat.png -->
         <div class="cat-container">
-            <img src="https://i.ibb.co/68v8T3S/IMG-20260731-225011-991.jpg" alt="Cat" class="cat-img" id="cat">
+            <img src="cat.png" alt="Cat" class="cat-img" id="cat">
         </div>
     </div>
 
@@ -166,14 +167,13 @@
         cat.addEventListener('click', (e) => {
             clickCount++;
 
-            // Эффект пружинящего сплющивания
             cat.classList.add('squish');
             setTimeout(() => cat.classList.remove('squish'), 150);
 
-            // Пасхалка на 5-й клик: фонтан из сердечек!
+            // На 5-й клик вылетают сердечки
             if (clickCount >= 5) {
                 spawnHearts();
-                clickCount = 0; // Сброс счетчика
+                clickCount = 0;
             }
         });
 
@@ -186,7 +186,6 @@
                 heart.classList.add('floating-heart');
                 heart.innerText = '💖';
 
-                // Случайный разлёт сердечек в разные стороны
                 const angle = (Math.PI * 2 / heartCount) * i;
                 const dist = 60 + Math.random() * 40;
                 const dx = Math.cos(angle) * dist + 'px';
