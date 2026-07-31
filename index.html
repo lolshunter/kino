@@ -1,59 +1,118 @@
-let apiKey = process.env.KINOPOSK_API_KEY;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Кинотеатр</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-let res = await HTTP.get(
-  "https://api.kinopoisk.dev/v1.4/movie/search",
-  {
-    query: {
-      page: 1,
-      limit: 1,
-      query: message
-    },
-    headers: {
-      "X-API-KEY": apiKey
-    }
-  }
-);
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #070709;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-let movie = res.data.docs[0];
+        /* Центрированная карточка */
+        .wrapper {
+            width: 100%;
+            max-width: 900px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-if (!movie) {
-  Bot.sendMessage("😔 Фильм не найден.");
-  return;
-}
+        .kinobox {
+            width: 100%;
+            background: #12131c;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
 
-let rating = movie.rating && movie.rating.kp
-  ? movie.rating.kp
-  : "—";
+        /* Экран видео */
+        .kinobox iframe {
+            width: 100% !important;
+            aspect-ratio: 16 / 9;
+            max-height: 70vh;
+            border: none !important;
+            display: block;
+        }
 
-let poster = movie.poster && movie.poster.url;
+        /* --- ТОЧНАЯ СТИЛИЗАЦИЯ КНОПОК ОЗВУЧКИ И ПЛЕЕРОВ ВВЕРХУ --- */
+        
+        /* Панель с переключателями */
+        .kinobox .kinobox_nav,
+        .kinobox_nav {
+            background: #161825 !important;
+            padding: 10px !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            justify-content: center !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
 
-let kinoLink = "https://kenopoisk.vip/film/" + movie.id + "/";
+        /* Кнопки плееров и озвучек */
+        .kinobox .kinobox_nav_button,
+        .kinobox_nav_button,
+        .kinobox_nav button,
+        .kinobox_nav ul li {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 8px !important;
+            color: #ffffff !important;
+            padding: 8px 14px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            list-style: none !important;
+        }
 
-if (poster) {
-  Bot.sendPhoto(poster);
-}
+        /* Активная кнопка */
+        .kinobox .kinobox_nav_button_active,
+        .kinobox_nav_button_active,
+        .kinobox_nav .active,
+        .kinobox_nav_button:hover {
+            background: #6366f1 !important;
+            border-color: #6366f1 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5) !important;
+        }
+    </style>
+</head>
+<body>
 
-let text =
-  "🎬 " + movie.name + "\n" +
-  "📅 " + movie.year + "\n" +
-  "⭐ Кинопоиск: " + rating + "\n\n" +
-  "📝 " + (movie.shortDescription || movie.description || "Описание отсутствует.");
+    <div class="wrapper">
+        <div class="kinobox"></div>
+    </div>
 
-Bot.sendMessage(text);
+    <script src="https://fbphdplay.top/kinobox.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const filmId = urlParams.get('id');
 
-Bot.sendMessage(
-  "🍿 " + movie.name,
-  {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🎬 Смотреть",
-            url: kinoLink,
-            style: "success"
-          }
-        ]
-      ]
-    }
-  }
-);
+        if (filmId) {
+            kinobox('.kinobox', {
+                baseUrl: 'https://fbphdplay.top/',
+                search: { kinopoisk: filmId }
+            });
+        } else {
+            document.querySelector('.kinobox').innerHTML = 
+                '<h3 style="color: #ffffff; text-align: center; padding: 40px; font-weight: 400;">Фильм не найден</h3>';
+        }
+    </script>
+</body>
+</html>
