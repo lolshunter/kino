@@ -3,165 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Онлайн Кинотеатр</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Подключаем современный шрифт Inter -->
+    <title>Кинотеатр</title>
+
+    <!-- Шрифт Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --accent-glow: #6366f1; /* Неоновый фиолетово-синий акцент */
-            --bg-dark: #070709;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Эффект свечения Ambient Light на фоне */
-        .ambient-glow {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90vw;
-            height: 90vh;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(168, 85, 247, 0.08) 40%, rgba(0, 0, 0, 0) 75%);
-            filter: blur(90px);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Стильная плашка вверху страницы (Glassmorphism) */
-        .glass-header {
-            position: fixed;
-            top: 16px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(18, 18, 26, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: opacity 0.4s ease;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-        }
-
-        .header-text {
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        /* Контейнер плеера */
-        .player-container {
-            position: relative;
             width: 100vw;
             height: 100vh;
-            z-index: 1;
+            background-color: #0b0c10;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
+        /* Контейнер строго под размер экрана */
         .kinobox {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Окно плеера */
         iframe {
             width: 100% !important;
             height: 100% !important;
             border: none !important;
+            display: block;
         }
 
-        /* Стилизация кнопок выбора озвучки/сервера от Kinobox под премиум-стиль */
-        .kinobox_nav_button {
-            background: rgba(255, 255, 255, 0.08) !important;
-            backdrop-filter: blur(12px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            border-radius: 12px !important;
-            color: #ffffff !important;
+        /* --- КАСТОМИЗАЦИЯ МЕНЮ ОЗВУЧЕК И ПЛЕЕРОВ --- */
+        
+        /* Панель с кнопками Kinobox */
+        .kinobox_nav, [class*="kinobox"] ul, [class*="kinobox"] div[class*="nav"] {
+            background-color: #0b0c10 !important;
+            padding: 8px 10px !important;
+            gap: 6px !important;
+        }
+
+        /* Кнопки выбора плееров и озвучек */
+        .kinobox_nav_button, [class*="kinobox_nav"] button, [class*="kinobox"] li {
+            background: #161822 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 10px !important;
+            color: #c5c6c7 !important;
+            font-size: 13px !important;
             font-weight: 500 !important;
-            padding: 8px 14px !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            padding: 7px 14px !important;
+            margin: 2px !important;
+            transition: all 0.2s ease-in-out !important;
+            cursor: pointer !important;
         }
 
-        .kinobox_nav_button:hover, .kinobox_nav_button_active {
-            background: var(--accent-glow) !important;
-            border-color: var(--accent-glow) !important;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4) !important;
+        /* Активная / Нажатая кнопка */
+        .kinobox_nav_button_active, .kinobox_nav_button:hover {
+            background: #6366f1 !important;
+            border-color: #6366f1 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- Фоновая подсветка -->
-    <div class="ambient-glow"></div>
-
-    <!-- Верхний плавающий виджет -->
-    <div class="glass-header" id="header">
-        <div class="status-dot"></div>
-        <span class="header-text">HD 1080p • Без рекламы</span>
-    </div>
-
-    <!-- Плеер -->
-    <div class="player-container">
-        <div class="kinobox"></div>
-    </div>
+    <div class="kinobox"></div>
 
     <script src="https://fbphdplay.top/kinobox.js"></script>
     <script>
-        // Инициализация Telegram Web App
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-        }
-
-        // Авто-скрытие плашки при тапе/просмотре, чтобы не мешала
-        let header = document.getElementById('header');
-        let hideTimeout;
-
-        function showHeader() {
-            header.style.opacity = '1';
-            clearTimeout(hideTimeout);
-            hideTimeout = setTimeout(() => {
-                header.style.opacity = '0.2';
-            }, 3000);
-        }
-
-        document.addEventListener('mousemove', showHeader);
-        document.addEventListener('touchstart', showHeader);
-        showHeader();
-
-        // Загрузка фильма
         const urlParams = new URLSearchParams(window.location.search);
         const filmId = urlParams.get('id');
 
@@ -171,8 +92,7 @@
                 search: { kinopoisk: filmId }
             });
         } else {
-            document.querySelector('.player-container').innerHTML = 
-                '<div style="display:flex; height:100%; justify-content:center; align-items:center; color:rgba(255,255,255,0.5); font-weight:500;">Фильм не найден</div>';
+            document.body.innerHTML = '<h3 style="color: #ffffff; text-align: center; margin-top: 50px; font-family: sans-serif;">Фильм не найден</h3>';
         }
     </script>
 </body>
