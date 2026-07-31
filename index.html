@@ -22,7 +22,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* Центрированный контейнер для мобилки и компа */
         .wrapper {
             width: 100%;
             max-width: 900px;
@@ -33,7 +32,6 @@
             justify-content: center;
         }
 
-        /* Красивая карточка плеера */
         .kinobox {
             width: 100%;
             background: #12131c;
@@ -45,7 +43,6 @@
             flex-direction: column;
         }
 
-        /* Окно видео ровно 16:9 */
         .kinobox iframe, 
         .kinobox_player iframe {
             width: 100% !important;
@@ -53,40 +50,6 @@
             max-height: 70vh;
             border: none !important;
             display: block;
-        }
-
-        /* --- ПРИНУДИТЕЛЬНАЯ КАСТОМИЗАЦИЯ КНОПОК KINOBOX --- */
-        html body div.kinobox .kinobox_nav,
-        html body .kinobox_nav {
-            background: #161825 !important;
-            padding: 10px 12px !important;
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: 8px !important;
-            justify-content: center !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        }
-
-        html body div.kinobox .kinobox_nav_button,
-        html body .kinobox_nav_button,
-        html body div.kinobox button {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            border-radius: 8px !important;
-            color: #e2e8f0 !important;
-            padding: 7px 14px !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-        }
-
-        html body div.kinobox .kinobox_nav_button_active,
-        html body div.kinobox .kinobox_nav_button:hover {
-            background: #6366f1 !important;
-            border-color: #6366f1 !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45) !important;
         }
     </style>
 </head>
@@ -106,6 +69,38 @@
                 baseUrl: 'https://fbphdplay.top/',
                 search: { kinopoisk: filmId }
             });
+
+            // Динамически вставляем стили ПОСЛЕ Kinobox, чтобы перебить его родной файл CSS
+            const customStyles = document.createElement('style');
+            customStyles.innerHTML = `
+                .kinobox_nav, div[class*="kinobox_nav"] {
+                    background: #161825 !important;
+                    padding: 10px !important;
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    gap: 8px !important;
+                    justify-content: center !important;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+                }
+                .kinobox_nav_button, button[class*="kinobox"], .kinobox_nav div {
+                    background: rgba(255, 255, 255, 0.08) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                    border-radius: 8px !important;
+                    color: #ffffff !important;
+                    padding: 8px 14px !important;
+                    font-size: 13px !important;
+                    font-weight: 600 !important;
+                    cursor: pointer !important;
+                    transition: all 0.2s ease !important;
+                }
+                .kinobox_nav_button_active, .kinobox_nav_button:hover {
+                    background: #6366f1 !important;
+                    border-color: #6366f1 !important;
+                    color: #ffffff !important;
+                    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5) !important;
+                }
+            `;
+            document.head.appendChild(customStyles);
         } else {
             document.querySelector('.kinobox').innerHTML = 
                 '<h3 style="color: #ffffff; text-align: center; padding: 40px; font-weight: 400;">Фильм не найден</h3>';
