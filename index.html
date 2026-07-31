@@ -90,33 +90,40 @@
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
         }
 
-        /* --- КОТИК УВЕЛИЧЕН В 2 РАЗА (150px) --- */
+        /* --- КОТИК СВЕРХУ СЛЕВА --- */
         .cat-container {
             position: relative;
-            margin-top: 10px;
+            align-self: flex-start;
+            margin-bottom: 8px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
         }
 
         .cat-img {
-            width: 150px;
-            height: 150px;
+            width: 110px;
+            height: 110px;
             cursor: pointer;
-            user-select: none;
             object-fit: contain;
-            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* Блокировка выделения и меню скачивания */
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+            
+            transition: transform 0.12s ease-out;
         }
 
-        /* Эффект сплющивания при нажатии */
+        /* Мягкое сплющивание при нажатии */
         .cat-img:active, .cat-img.squish {
-            transform: scale(1.25, 0.7) translateY(8px);
+            transform: scale(1.1, 0.9) translateY(4px);
         }
 
         /* Анимация летящих сердечек */
         .floating-heart {
             position: absolute;
-            font-size: 24px;
+            font-size: 22px;
             pointer-events: none;
             animation: floatUp 1.2s ease-out forwards;
             z-index: 99;
@@ -137,12 +144,12 @@
 <body>
 
     <div class="wrapper">
-        <div class="kinobox"></div>
-
-        <!-- Интерактивный котик из файла cat.png -->
+        <!-- Котик расположен СВЕРХУ СЛЕВА над плеером -->
         <div class="cat-container">
-            <img src="cat.png" alt="Cat" class="cat-img" id="cat">
+            <img src="cat.png" alt="Cat" class="cat-img" id="cat" draggable="false">
         </div>
+
+        <div class="kinobox"></div>
     </div>
 
     <script src="https://fbphdplay.top/kinobox.js"></script>
@@ -164,11 +171,14 @@
         const cat = document.getElementById('cat');
         let clickCount = 0;
 
-        cat.addEventListener('click', (e) => {
+        // Блокируем вызов контекстного меню долгим нажатием
+        cat.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        cat.addEventListener('click', () => {
             clickCount++;
 
             cat.classList.add('squish');
-            setTimeout(() => cat.classList.remove('squish'), 150);
+            setTimeout(() => cat.classList.remove('squish'), 120);
 
             // На 5-й клик вылетают сердечки
             if (clickCount >= 5) {
@@ -179,7 +189,7 @@
 
         function spawnHearts() {
             const container = document.querySelector('.cat-container');
-            const heartCount = 14;
+            const heartCount = 12;
 
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
@@ -187,14 +197,14 @@
                 heart.innerText = '💖';
 
                 const angle = (Math.PI * 2 / heartCount) * i;
-                const dist = 90 + Math.random() * 50;
+                const dist = 70 + Math.random() * 40;
                 const dx = Math.cos(angle) * dist + 'px';
-                const dy = (Math.sin(angle) * dist - 40) + 'px';
+                const dy = (Math.sin(angle) * dist - 30) + 'px';
 
                 heart.style.setProperty('--dx', dx);
                 heart.style.setProperty('--dy', dy);
-                heart.style.left = '63px';
-                heart.style.top = '50px';
+                heart.style.left = '45px';
+                heart.style.top = '35px';
 
                 container.appendChild(heart);
 
