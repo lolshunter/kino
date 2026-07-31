@@ -25,11 +25,7 @@
         .wrapper {
             width: 100%;
             max-width: 900px;
-            max-height: 100vh;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 10px;
         }
 
         .kinobox {
@@ -39,12 +35,9 @@
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            flex-direction: column;
         }
 
-        .kinobox iframe, 
-        .kinobox_player iframe {
+        .kinobox iframe {
             width: 100% !important;
             aspect-ratio: 16 / 9;
             max-height: 70vh;
@@ -70,40 +63,35 @@
                 search: { kinopoisk: filmId }
             });
 
-            // Динамически вставляем стили ПОСЛЕ Kinobox, чтобы перебить его родной файл CSS
-            const customStyles = document.createElement('style');
-            customStyles.innerHTML = `
-                .kinobox_nav, div[class*="kinobox_nav"] {
-                    background: #161825 !important;
-                    padding: 10px !important;
-                    display: flex !important;
-                    flex-wrap: wrap !important;
-                    gap: 8px !important;
-                    justify-content: center !important;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            // Прямой JS-перехват элементов Kinobox для принудительной покраски
+            setInterval(() => {
+                const nav = document.querySelector('.kinobox_nav, [class*="nav"]');
+                if (nav) {
+                    nav.style.setProperty('background', '#161825', 'important');
+                    nav.style.setProperty('padding', '8px', 'important');
+                    nav.style.setProperty('display', 'flex', 'important');
+                    nav.style.setProperty('flex-wrap', 'wrap', 'important');
+                    nav.style.setProperty('gap', '6px', 'important');
+                    nav.style.setProperty('justify-content', 'center', 'important');
                 }
-                .kinobox_nav_button, button[class*="kinobox"], .kinobox_nav div {
-                    background: rgba(255, 255, 255, 0.08) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-                    border-radius: 8px !important;
-                    color: #ffffff !important;
-                    padding: 8px 14px !important;
-                    font-size: 13px !important;
-                    font-weight: 600 !important;
-                    cursor: pointer !important;
-                    transition: all 0.2s ease !important;
-                }
-                .kinobox_nav_button_active, .kinobox_nav_button:hover {
-                    background: #6366f1 !important;
-                    border-color: #6366f1 !important;
-                    color: #ffffff !important;
-                    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5) !important;
-                }
-            `;
-            document.head.appendChild(customStyles);
+
+                const buttons = document.querySelectorAll('.kinobox button, .kinobox [class*="button"], .kinobox_nav *');
+                buttons.forEach(btn => {
+                    if (btn.tagName !== 'IFRAME') {
+                        btn.style.setProperty('background', '#4f46e5', 'important'); // Фиолетово-синий
+                        btn.style.setProperty('color', '#ffffff', 'important');
+                        btn.style.setProperty('border', 'none', 'important');
+                        btn.style.setProperty('border-radius', '8px', 'important');
+                        btn.style.setProperty('padding', '6px 12px', 'important');
+                        btn.style.setProperty('font-size', '12px', 'important');
+                        btn.style.setProperty('font-weight', '600', 'important');
+                        btn.style.setProperty('cursor', 'pointer', 'important');
+                    }
+                });
+            }, 300);
         } else {
             document.querySelector('.kinobox').innerHTML = 
-                '<h3 style="color: #ffffff; text-align: center; padding: 40px; font-weight: 400;">Фильм не найден</h3>';
+                '<h3 style="color: #ffffff; text-align: center; padding: 40px;">Фильм не найден</h3>';
         }
     </script>
 </body>
