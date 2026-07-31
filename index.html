@@ -53,7 +53,7 @@
         iframe {
             width: 100% !important;
             aspect-ratio: 16 / 9;
-            max-height: 65vh;
+            max-height: 60vh;
             border: none !important;
             display: block;
         }
@@ -90,18 +90,18 @@
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
         }
 
-        /* --- КОТИК И АНИМАЦИИ --- */
+        /* --- КОТИК УВЕЛИЧЕН В 2 РАЗА (150px) --- */
         .cat-container {
             position: relative;
-            margin-top: 14px;
+            margin-top: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .cat-img {
-            width: 75px;
-            height: 75px;
+            width: 150px;
+            height: 150px;
             cursor: pointer;
             user-select: none;
             object-fit: contain;
@@ -110,13 +110,13 @@
 
         /* Эффект сплющивания при нажатии */
         .cat-img:active, .cat-img.squish {
-            transform: scale(1.25, 0.7) translateY(6px);
+            transform: scale(1.25, 0.7) translateY(8px);
         }
 
         /* Анимация летящих сердечек */
         .floating-heart {
             position: absolute;
-            font-size: 20px;
+            font-size: 24px;
             pointer-events: none;
             animation: floatUp 1.2s ease-out forwards;
             z-index: 99;
@@ -179,7 +179,7 @@
 
         function spawnHearts() {
             const container = document.querySelector('.cat-container');
-            const heartCount = 12;
+            const heartCount = 14;
 
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
@@ -187,14 +187,14 @@
                 heart.innerText = '💖';
 
                 const angle = (Math.PI * 2 / heartCount) * i;
-                const dist = 60 + Math.random() * 40;
+                const dist = 90 + Math.random() * 50;
                 const dx = Math.cos(angle) * dist + 'px';
-                const dy = (Math.sin(angle) * dist - 30) + 'px';
+                const dy = (Math.sin(angle) * dist - 40) + 'px';
 
                 heart.style.setProperty('--dx', dx);
                 heart.style.setProperty('--dy', dy);
-                heart.style.left = '25px';
-                heart.style.top = '15px';
+                heart.style.left = '63px';
+                heart.style.top = '50px';
 
                 container.appendChild(heart);
 
