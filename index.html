@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Кинотеатр</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
@@ -16,20 +23,42 @@
             height: 100vh;
             background-color: #070709;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px 0;
         }
 
-        /* Центрированная карточка */
         .wrapper {
             width: 100%;
             max-width: 900px;
             padding: 12px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            align-items: center;
+            margin: auto 0;
+        }
+
+        /* --- НАЗВАНИЕ ФИЛЬМА --- */
+        .movie-title {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 24px;
+            min-height: 30px;
+            opacity: 0.95;
+            padding: 0 15px;
+            line-height: 1.3;
+        }
+
+        /* --- КОНТЕЙНЕР ПЛЕЕРА И КОТИКА --- */
+        .kinobox-container {
+            position: relative;
+            width: 100%;
+            transform-style: preserve-3d;
         }
 
         .kinobox {
@@ -39,71 +68,161 @@
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Экран видео */
-        .kinobox iframe {
+        iframe {
             width: 100% !important;
             aspect-ratio: 16 / 9;
-            max-height: 70vh;
+            max-height: 60vh;
             border: none !important;
             display: block;
         }
 
-        /* --- ТОЧНАЯ СТИЛИЗАЦИЯ КНОПОК ОЗВУЧКИ И ПЛЕЕРОВ ВВЕРХУ --- */
-        
-        /* Панель с переключателями */
-        .kinobox .kinobox_nav,
-        .kinobox_nav {
-            background: #161825 !important;
-            padding: 10px !important;
+        /* --- КНОПКИ ПЛЕЕРА --- */
+        .kinobox_nav, [class*="kinobox"] ul, [class*="kinobox"] div[class*="nav"] {
+            background-color: #12131c !important;
+            padding: 10px 12px !important;
+            gap: 6px !important;
             display: flex !important;
             flex-wrap: wrap !important;
-            gap: 8px !important;
-            justify-content: center !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            justify-content: flex-start !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
-        /* Кнопки плееров и озвучек */
-        .kinobox .kinobox_nav_button,
-        .kinobox_nav_button,
-        .kinobox_nav button,
-        .kinobox_nav ul li {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            border-radius: 8px !important;
-            color: #ffffff !important;
-            padding: 8px 14px !important;
+        .kinobox_nav_button, [class*="kinobox_nav"] button, [class*="kinobox"] li {
+            background: #161825 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 10px !important;
+            color: #c5c6c7 !important;
             font-size: 13px !important;
-            font-weight: 600 !important;
+            font-weight: 500 !important;
+            padding: 7px 14px !important;
+            margin: 2px !important;
+            transition: all 0.2s ease-in-out !important;
             cursor: pointer !important;
-            transition: all 0.2s ease !important;
             list-style: none !important;
         }
 
-        /* Активная кнопка */
-        .kinobox .kinobox_nav_button_active,
-        .kinobox_nav_button_active,
-        .kinobox_nav .active,
-        .kinobox_nav_button:hover {
+        .kinobox_nav_button_active, [class*="kinobox"] li[class*="active"], .kinobox_nav_button:hover {
             background: #6366f1 !important;
             border-color: #6366f1 !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
+        }
+
+        /* --- КОТИК НА РАМКЕ --- */
+        .cat-container {
+            position: absolute;
+            top: -53px;
+            right: 20px;
+            z-index: 999999 !important;
+            transform: translateZ(1000px);
+            pointer-events: auto;
+        }
+
+        .cat-img {
+            width: 90px;
+            height: auto;
+            cursor: pointer;
+            object-fit: contain;
+            display: block;
+            
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+            
+            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+            transition: transform 0.06s ease-out;
+            will-change: transform;
+        }
+
+        .cat-img.squish {
+            transform: scale(1.12, 0.88) translateY(3px);
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatUp 1.2s ease-out forwards;
+            z-index: 999999;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.6);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(1.4);
+            }
+        }
+
+        .footer-heart {
+            color: #ffb6c1;
+            font-size: 18px;
+            opacity: 0.6;
+            user-select: none;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-        <div class="kinobox"></div>
+        <!-- Название фильма -->
+        <h1 class="movie-title" id="movie-title"></h1>
+
+        <div class="kinobox-container">
+            <!-- Плеер -->
+            <div class="kinobox"></div>
+
+            <!-- Котик -->
+            <div class="cat-container">
+                <img src="cat.png" alt="Cat" class="cat-img" id="cat" draggable="false">
+            </div>
+        </div>
     </div>
+
+    <div class="footer-heart">♡</div>
 
     <script src="https://fbphdplay.top/kinobox.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const filmId = urlParams.get('id');
+        let filmTitle = urlParams.get('title');
 
+        const titleEl = document.getElementById('movie-title');
+
+        // 1. Быстрое и прямое получение названия из URL параметра ссылки бота
+        if (filmTitle) {
+            titleEl.innerText = decodeURIComponent(filmTitle.replace(/\+/g, ' '));
+        } 
+        // 2. Резервное авто-получение через открытый базы данных фильмов
+        else if (filmId) {
+            fetch(`https://vidsrc.xyz/embed/movie/${filmId}`)
+                .then(() => {})
+                .catch(() => {});
+
+            fetch(`https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}`, {
+                headers: { 'X-API-KEY': '8c893722-e064-4c10-843e-6f708b93f70f' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && (data.nameRu || data.nameOriginal || data.nameEn)) {
+                    titleEl.innerText = data.nameRu || data.nameOriginal || data.nameEn;
+                }
+            })
+            .catch(() => {});
+        }
+
+        // Инициализация плеера
         if (filmId) {
             kinobox('.kinobox', {
                 baseUrl: 'https://fbphdplay.top/',
@@ -112,6 +231,49 @@
         } else {
             document.querySelector('.kinobox').innerHTML = 
                 '<h3 style="color: #ffffff; text-align: center; padding: 40px; font-weight: 400;">Фильм не найден</h3>';
+        }
+
+        // Логика котика
+        const cat = document.getElementById('cat');
+        let clickCount = 0;
+
+        cat.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        cat.addEventListener('pointerdown', () => {
+            clickCount++;
+
+            cat.classList.add('squish');
+            setTimeout(() => cat.classList.remove('squish'), 60);
+
+            if (clickCount >= 5) {
+                spawnHearts();
+                clickCount = 0;
+            }
+        });
+
+        function spawnHearts() {
+            const container = document.querySelector('.cat-container');
+            const heartCount = 12;
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerText = '💖';
+
+                const angle = (Math.PI * 2 / heartCount) * i;
+                const dist = 60 + Math.random() * 35;
+                const dx = Math.cos(angle) * dist + 'px';
+                const dy = (Math.sin(angle) * dist - 30) + 'px';
+
+                heart.style.setProperty('--dx', dx);
+                heart.style.setProperty('--dy', dy);
+                heart.style.left = '40px';
+                heart.style.top = '20px';
+
+                container.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 1200);
+            }
         }
     </script>
 </body>
